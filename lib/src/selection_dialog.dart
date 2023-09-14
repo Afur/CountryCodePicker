@@ -30,7 +30,6 @@ class _SelectionDialogState extends State<SelectionDialog> {
 
   @override
   Widget build(BuildContext context) => Container(
-        clipBehavior: Clip.hardEdge,
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 0.85,
         decoration: const BoxDecoration(
@@ -55,23 +54,20 @@ class _SelectionDialogState extends State<SelectionDialog> {
             Expanded(
               child: ListView(
                 children: [
-                  if (widget.favoriteElements.isEmpty)
-                    const DecoratedBox(decoration: BoxDecoration())
-                  else
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ...widget.favoriteElements.map(
-                          (f) => SimpleDialogOption(
-                            child: _buildOption(f),
-                            onPressed: () {
-                              _selectItem(f);
-                            },
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...widget.favoriteElements.map(
+                        (f) => SimpleDialogOption(
+                          child: _buildOption(f),
+                          onPressed: () {
+                            _selectItem(f);
+                          },
                         ),
-                        const Divider(),
-                      ],
-                    ),
+                      ),
+                      const Divider(),
+                    ],
+                  ),
                   if (_filteredElements.isEmpty)
                     _buildEmptySearchWidget(context)
                   else
@@ -91,30 +87,22 @@ class _SelectionDialogState extends State<SelectionDialog> {
       );
 
   Widget _buildOption(CountryCode e) {
-    return SizedBox(
-      width: 400,
-      child: Flex(
-        direction: Axis.horizontal,
-        children: [
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Image.asset(
-                e.flagUri,
-                package: 'country_code_picker',
-                width: widget.flagWidth,
-              ),
-            ),
+    return Row(
+      children: [
+        Image.asset(
+          e.flagUri,
+          package: 'country_code_picker',
+          width: widget.flagWidth,
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            e.toLongString(),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
-          Expanded(
-            flex: 4,
-            child: Text(
-              e.toLongString(),
-              overflow: TextOverflow.fade,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

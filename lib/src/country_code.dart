@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:country_code_picker/src/country_localizations.dart';
 
-/// Country element. This is the element that contains all the information
 class CountryCode {
   /// the name of the country
   String name;
@@ -32,16 +31,7 @@ class CountryCode {
     return this..name = CountryLocalizations.of(context)?.translate(code) ?? name;
   }
 
-  @override
-  String toString() => dialCode;
+  String toLongString() => "$dialCode ${_toCountryStringOnly()}";
 
-  String toLongString() => "$dialCode ${toCountryStringOnly()}";
-
-  String toCountryStringOnly() {
-    return '$_cleanName';
-  }
-
-  String? get _cleanName {
-    return name.replaceAll(RegExp(r'[[\]]'), '').split(',').first;
-  }
+  String _toCountryStringOnly() => name.replaceAll(RegExp(r'[[\]]'), '').split(',').first;
 }
