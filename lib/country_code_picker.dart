@@ -12,21 +12,23 @@ export 'src/selection_dialog.dart';
 
 class CountryCodePicker extends StatefulWidget {
   final String initialSelection;
-  final ValueChanged<CountryCode> onChanged;
-  final ValueChanged<CountryCode?>? onInit;
   final List<String> favorites;
-  final bool enabled;
+  final ValueChanged<CountryCode> onChanged;
   final double flagWidth;
   final String searchHint;
+  final Widget searchIcon;
+  final ValueChanged<CountryCode?>? onInit;
+  final bool enabled;
 
   const CountryCodePicker({
     required this.initialSelection,
+    required this.favorites,
     required this.onChanged,
     required this.flagWidth,
     required this.searchHint,
+    required this.searchIcon,
     super.key,
     this.onInit,
-    this.favorites = const [],
     this.enabled = true,
   });
 
@@ -37,9 +39,7 @@ class CountryCodePicker extends StatefulWidget {
 class CountryCodePickerState extends State<CountryCodePicker> {
   late CountryCode selectedItem;
   late List<CountryCode> elements;
-  late final List<CountryCode> favoriteElements;
-
-  CountryCodePickerState();
+  late final List<CountryCode> favorites;
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class CountryCodePickerState extends State<CountryCodePicker> {
       orElse: () => elements[0],
     );
 
-    favoriteElements = elements
+    favorites = elements
         .where(
           (item) =>
               widget.favorites.firstWhereOrNull(
@@ -132,8 +132,9 @@ class CountryCodePickerState extends State<CountryCodePicker> {
       builder: (context) => Dialog(
         child: SelectionDialog(
           elements,
-          favoriteElements,
+          favorites,
           widget.flagWidth,
+          widget.searchIcon,
           widget.searchHint,
         ),
       ),

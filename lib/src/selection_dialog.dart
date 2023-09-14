@@ -6,13 +6,15 @@ import 'package:country_code_picker/src/country_localizations.dart';
 class SelectionDialog extends StatefulWidget {
   final List<CountryCode> elements;
   final double flagWidth;
-  final List<CountryCode> favoriteElements;
+  final List<CountryCode> favorites;
+  final Widget searchIcon;
   final String searchHint;
 
   const SelectionDialog(
     this.elements,
-    this.favoriteElements,
+    this.favorites,
     this.flagWidth,
+    this.searchIcon,
     this.searchHint,
   );
 
@@ -65,7 +67,7 @@ class _SelectionDialogState extends State<SelectionDialog> {
                 color: Color(0xFF090A0A),
               ),
               decoration: InputDecoration(
-                icon: const Icon(Icons.search),
+                icon: widget.searchIcon,
                 hintText: widget.searchHint,
                 hintStyle: const TextStyle(
                   fontSize: 16,
@@ -80,28 +82,14 @@ class _SelectionDialogState extends State<SelectionDialog> {
             child: ListView(
               padding: const EdgeInsets.only(bottom: 12),
               children: [
-                ...widget.favoriteElements.map(
-                  (code) => SimpleDialogOption(
-                    child: _Option(code, widget.flagWidth),
-                    onPressed: () {
-                      _selectItem(code);
-                    },
-                  ),
-                ),
+                ...widget.favorites.map((code) => _Option(code, widget.flagWidth)),
                 const Divider(),
                 if (_filteredElements.isEmpty)
                   Center(
                     child: Text(CountryLocalizations.of(context)?.translate('no_country') ?? 'No country found'),
                   )
                 else
-                  ..._filteredElements.map(
-                    (code) => SimpleDialogOption(
-                      child: _Option(code, widget.flagWidth),
-                      onPressed: () {
-                        _selectItem(code);
-                      },
-                    ),
-                  ),
+                  ..._filteredElements.map((code) => _Option(code, widget.flagWidth)),
               ],
             ),
           ),
@@ -118,10 +106,6 @@ class _SelectionDialogState extends State<SelectionDialog> {
           .toList();
     });
   }
-
-  void _selectItem(CountryCode code) {
-    Navigator.pop(context, code);
-  }
 }
 
 class _Option extends StatelessWidget {
@@ -135,22 +119,28 @@ class _Option extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Image.asset(
-          _countryCode.flagUri,
-          package: 'country_code_picker',
-          width: _flagWidth,
+    return InkWell(
+      onTap: () => Navigator.pop(context, _countryCode),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        child: Row(
+          children: [
+            Image.asset(
+              _countryCode.flagUri,
+              package: 'country_code_picker',
+              width: _flagWidth,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                _countryCode.toLongString(),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Text(
-            _countryCode.toLongString(),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
