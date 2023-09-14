@@ -97,7 +97,7 @@ class CountryCodePickerState extends State<CountryCodePicker> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: showCountryCodePickerDialog,
+      onTap: _showCountryCodePickerDialog,
       child: Row(
         children: [
           const SizedBox(width: 12),
@@ -126,7 +126,7 @@ class CountryCodePickerState extends State<CountryCodePicker> {
     );
   }
 
-  Future<void> showCountryCodePickerDialog() async {
+  Future<void> _showCountryCodePickerDialog() async {
     final countryCode = await showDialog<CountryCode>(
       context: context,
       builder: (context) => Dialog(

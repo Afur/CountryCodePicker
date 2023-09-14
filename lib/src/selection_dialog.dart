@@ -35,15 +35,17 @@ class _SelectionDialogState extends State<SelectionDialog> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: Column(
         children: [
           Align(
             alignment: Alignment.centerRight,
             child: IconButton(
-              icon: const Icon(Icons.close),
+              icon: const Icon(
+                Icons.close,
+                color: Color(0xFF090A0A),
+              ),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -76,6 +78,7 @@ class _SelectionDialogState extends State<SelectionDialog> {
           ),
           Expanded(
             child: ListView(
+              padding: const EdgeInsets.only(bottom: 12),
               children: [
                 ...widget.favoriteElements.map(
                   (code) => SimpleDialogOption(
@@ -116,8 +119,8 @@ class _SelectionDialogState extends State<SelectionDialog> {
     });
   }
 
-  void _selectItem(CountryCode e) {
-    Navigator.pop(context, e);
+  void _selectItem(CountryCode code) {
+    Navigator.pop(context, code);
   }
 }
 
