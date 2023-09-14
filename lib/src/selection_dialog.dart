@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'country_code.dart';
-import 'country_localizations.dart';
+import 'package:country_code_picker/src/country_code.dart';
+import 'package:country_code_picker/src/country_localizations.dart';
 
 /// selection dialog used for selection of the country code
 class SelectionDialog extends StatefulWidget {
@@ -31,7 +31,7 @@ class SelectionDialog extends StatefulWidget {
   SelectionDialog(
     this.elements,
     this.favoriteElements, {
-    Key? key,
+    super.key,
     this.showCountryOnly,
     this.emptySearchBuilder,
     InputDecoration searchDecoration = const InputDecoration(),
@@ -46,10 +46,9 @@ class SelectionDialog extends StatefulWidget {
     this.barrierColor,
     this.hideSearch = false,
     this.closeIcon,
-  })  : searchDecoration = searchDecoration.prefixIcon == null
+  }) : searchDecoration = searchDecoration.prefixIcon == null
             ? searchDecoration.copyWith(prefixIcon: const Icon(Icons.search))
-            : searchDecoration,
-        super(key: key);
+            : searchDecoration;
 
   @override
   State<StatefulWidget> createState() => _SelectionDialogState();
@@ -61,16 +60,15 @@ class _SelectionDialogState extends State<SelectionDialog> {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(0.0),
+        padding: EdgeInsets.zero,
         child: Container(
           clipBehavior: Clip.hardEdge,
           width: widget.size?.width ?? MediaQuery.of(context).size.width,
-          height:
-              widget.size?.height ?? MediaQuery.of(context).size.height * 0.85,
+          height: widget.size?.height ?? MediaQuery.of(context).size.height * 0.85,
           decoration: widget.boxDecoration ??
               BoxDecoration(
                 color: widget.backgroundColor ?? Colors.white,
-                borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
                 boxShadow: [
                   BoxShadow(
                     color: widget.barrierColor ?? Colors.grey.withOpacity(1),
@@ -85,7 +83,7 @@ class _SelectionDialogState extends State<SelectionDialog> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               IconButton(
-                padding: const EdgeInsets.all(0),
+                padding: EdgeInsets.zero,
                 iconSize: 20,
                 icon: widget.closeIcon!,
                 onPressed: () => Navigator.pop(context),
@@ -102,22 +100,23 @@ class _SelectionDialogState extends State<SelectionDialog> {
               Expanded(
                 child: ListView(
                   children: [
-                    widget.favoriteElements.isEmpty
-                        ? const DecoratedBox(decoration: BoxDecoration())
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ...widget.favoriteElements.map(
-                                (f) => SimpleDialogOption(
-                                  child: _buildOption(f),
-                                  onPressed: () {
-                                    _selectItem(f);
-                                  },
-                                ),
-                              ),
-                              const Divider(),
-                            ],
+                    if (widget.favoriteElements.isEmpty)
+                      const DecoratedBox(decoration: BoxDecoration())
+                    else
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...widget.favoriteElements.map(
+                            (f) => SimpleDialogOption(
+                              child: _buildOption(f),
+                              onPressed: () {
+                                _selectItem(f);
+                              },
+                            ),
                           ),
+                          const Divider(),
+                        ],
+                      ),
                     if (filteredElements.isEmpty)
                       _buildEmptySearchWidget(context)
                     else
@@ -146,12 +145,11 @@ class _SelectionDialogState extends State<SelectionDialog> {
           if (widget.showFlag!)
             Flexible(
               child: Container(
-                margin: const EdgeInsets.only(right: 16.0),
+                margin: const EdgeInsets.only(right: 16),
                 decoration: widget.flagDecoration,
-                clipBehavior:
-                    widget.flagDecoration == null ? Clip.none : Clip.hardEdge,
+                clipBehavior: widget.flagDecoration == null ? Clip.none : Clip.hardEdge,
                 child: Image.asset(
-                  e.flagUri!,
+                  e.flagUri,
                   package: 'country_code_picker',
                   width: widget.flagWidth,
                 ),
@@ -160,9 +158,7 @@ class _SelectionDialogState extends State<SelectionDialog> {
           Expanded(
             flex: 4,
             child: Text(
-              widget.showCountryOnly!
-                  ? e.toCountryStringOnly()
-                  : e.toLongString(),
+              widget.showCountryOnly! ? e.toCountryStringOnly() : e.toLongString(),
               overflow: TextOverflow.fade,
               style: widget.textStyle,
             ),
@@ -178,8 +174,7 @@ class _SelectionDialogState extends State<SelectionDialog> {
     }
 
     return Center(
-      child: Text(CountryLocalizations.of(context)?.translate('no_country') ??
-          'No country found'),
+      child: Text(CountryLocalizations.of(context)?.translate('no_country') ?? 'No country found'),
     );
   }
 
@@ -189,14 +184,11 @@ class _SelectionDialogState extends State<SelectionDialog> {
     super.initState();
   }
 
-  void _filterElements(String s) {
-    s = s.toUpperCase();
+  void _filterElements(String query) {
+    final upper = query.toUpperCase();
     setState(() {
       filteredElements = widget.elements
-          .where((e) =>
-              e.code!.contains(s) ||
-              e.dialCode!.contains(s) ||
-              e.name!.toUpperCase().contains(s))
+          .where((e) => e.code.contains(upper) || e.dialCode.contains(upper) || e.name.toUpperCase().contains(upper))
           .toList();
     });
   }

@@ -1,67 +1,39 @@
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/cupertino.dart';
-
-import 'country_codes.dart';
-import 'country_localizations.dart';
-
-mixin ToAlias {}
+import 'package:country_code_picker/src/country_localizations.dart';
 
 /// Country element. This is the element that contains all the information
 class CountryCode {
   /// the name of the country
-  String? name;
-
-  /// the flag of the country
-  final String? flagUri;
+  String name;
 
   /// the country code (IT,AF..)
-  final String? code;
+  final String code;
 
   /// the dial code (+39,+93..)
-  final String? dialCode;
+  final String dialCode;
 
   CountryCode({
-    this.name,
-    this.flagUri,
-    this.code,
-    this.dialCode,
+    required this.name,
+    required this.code,
+    required this.dialCode,
   });
-
-  @Deprecated('Use `fromCountryCode` instead.')
-  factory CountryCode.fromCode(String isoCode) {
-    return CountryCode.fromCountryCode(isoCode);
-  }
-
-  factory CountryCode.fromCountryCode(String countryCode) {
-    final Map<String, String>? jsonCode = codes.firstWhereOrNull(
-      (code) => code['code'] == countryCode,
-    );
-    return CountryCode.fromJson(jsonCode!);
-  }
-
-  factory CountryCode.fromDialCode(String dialCode) {
-    final Map<String, String>? jsonCode = codes.firstWhereOrNull(
-      (code) => code['dial_code'] == dialCode,
-    );
-    return CountryCode.fromJson(jsonCode!);
-  }
-
-  CountryCode localize(BuildContext context) {
-    return this
-      ..name = CountryLocalizations.of(context)?.translate(code) ?? name;
-  }
 
   factory CountryCode.fromJson(Map<String, dynamic> json) {
     return CountryCode(
-      name: json['name'],
-      code: json['code'],
-      dialCode: json['dial_code'],
-      flagUri: 'flags/${json['code'].toLowerCase()}.png',
+      name: json['name'] as String,
+      code: json['code'] as String,
+      dialCode: json['dial_code'] as String,
     );
   }
 
+  String get flagUri => 'flags/${code.toLowerCase()}.png';
+
+  CountryCode localize(BuildContext context) {
+    return this..name = CountryLocalizations.of(context)?.translate(code) ?? name;
+  }
+
   @override
-  String toString() => "$dialCode";
+  String toString() => dialCode;
 
   String toLongString() => "$dialCode ${toCountryStringOnly()}";
 
@@ -70,6 +42,6 @@ class CountryCode {
   }
 
   String? get _cleanName {
-    return name?.replaceAll(RegExp(r'[[\]]'), '').split(',').first;
+    return name.replaceAll(RegExp(r'[[\]]'), '').split(',').first;
   }
 }
