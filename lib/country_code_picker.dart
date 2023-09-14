@@ -17,11 +17,13 @@ class CountryCodePicker extends StatefulWidget {
   final List<String> favorites;
   final bool enabled;
   final double flagWidth;
+  final String searchHint;
 
   const CountryCodePicker({
     required this.initialSelection,
     required this.onChanged,
     required this.flagWidth,
+    required this.searchHint,
     super.key,
     this.onInit,
     this.favorites = const [],
@@ -127,13 +129,12 @@ class CountryCodePickerState extends State<CountryCodePicker> {
   Future<void> showCountryCodePickerDialog() async {
     final countryCode = await showDialog<CountryCode>(
       context: context,
-      builder: (context) => Center(
-        child: Dialog(
-          child: SelectionDialog(
-            elements,
-            favoriteElements,
-            widget.flagWidth,
-          ),
+      builder: (context) => Dialog(
+        child: SelectionDialog(
+          elements,
+          favoriteElements,
+          widget.flagWidth,
+          widget.searchHint,
         ),
       ),
     );
