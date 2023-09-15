@@ -17,7 +17,7 @@ class CountryCodePicker extends StatefulWidget {
   final double flagWidth;
   final String searchHint;
   final Widget searchIcon;
-  final ValueChanged<CountryCode?>? onInit;
+  final ValueChanged<CountryCode> onInit;
   final bool enabled;
 
   const CountryCodePicker({
@@ -27,8 +27,8 @@ class CountryCodePicker extends StatefulWidget {
     required this.flagWidth,
     required this.searchHint,
     required this.searchIcon,
+    required this.onInit,
     super.key,
-    this.onInit,
     this.enabled = true,
   });
 
@@ -74,7 +74,8 @@ class CountryCodePickerState extends State<CountryCodePicker> {
     super.didChangeDependencies();
 
     elements = elements.map((element) => element.localize(context)).toList();
-    _onInit(selectedItem);
+
+    widget.onInit.call(selectedItem);
   }
 
   @override
@@ -90,7 +91,7 @@ class CountryCodePickerState extends State<CountryCodePicker> {
         orElse: () => elements[0],
       );
 
-      _onInit(selectedItem);
+      widget.onInit.call(selectedItem);
     }
   }
 
@@ -147,9 +148,5 @@ class CountryCodePickerState extends State<CountryCodePicker> {
 
       widget.onChanged(countryCode);
     }
-  }
-
-  void _onInit(CountryCode? countryCode) {
-    widget.onInit?.call(countryCode);
   }
 }
