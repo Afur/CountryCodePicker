@@ -31,7 +31,7 @@ class CountryCode {
     return this..name = CountryLocalizations.of(context)?.translate(code) ?? name;
   }
 
-  String toLongString() => "$dialCode ${_toCountryStringOnly()}";
+  String toCountryNameWithCode() => "$dialCode ${toCountryName()}";
 
-  String _toCountryStringOnly() => name.replaceAll(RegExp(r'[[\]]'), '').split(',').first;
+  String toCountryName() => name.replaceAll(RegExp(r'[[\]]'), '').split(',').first;
 }

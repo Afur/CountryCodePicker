@@ -1,21 +1,23 @@
+import 'package:country_code_picker/src/country_codes.dart';
+import 'package:country_code_picker/src/country_selection_mode.dart';
 import 'package:flutter/material.dart';
 
 import 'package:country_code_picker/src/country_code.dart';
 import 'package:country_code_picker/src/country_localizations.dart';
 
 class SelectionDialog extends StatefulWidget {
-  final List<CountryCode> elements;
   final double flagWidth;
   final List<CountryCode> favorites;
   final Widget searchIcon;
   final String searchHint;
+  final CountrySelectionMode countrySelectionMode;
 
   const SelectionDialog(
-    this.elements,
     this.favorites,
     this.flagWidth,
     this.searchIcon,
     this.searchHint,
+    this.countrySelectionMode,
   );
 
   @override
@@ -24,11 +26,13 @@ class SelectionDialog extends StatefulWidget {
 
 class _SelectionDialogState extends State<SelectionDialog> {
   late List<CountryCode> _filteredElements;
+  late List<CountryCode> _elements;
 
   @override
   void initState() {
     super.initState();
-    _filteredElements = widget.elements;
+    _elements = countryCodes.map((json) => CountryCode.fromJson(json)).toList();
+    _filteredElements = _elements;
   }
 
   @override
@@ -82,14 +86,28 @@ class _SelectionDialogState extends State<SelectionDialog> {
             child: ListView(
               padding: const EdgeInsets.only(bottom: 12),
               children: [
-                ...widget.favorites.map((code) => _Option(code, widget.flagWidth)),
+                ...widget.favorites.map(
+                  (code) => _Option(
+                    code,
+                    widget.flagWidth,
+                    widget.countrySelectionMode,
+                  ),
+                ),
                 const Divider(),
                 if (_filteredElements.isEmpty)
                   Center(
-                    child: Text(CountryLocalizations.of(context)?.translate('no_country') ?? 'No country found'),
+                    child: Text(CountryLocalizations.of(context)
+                            ?.translate('no_country') ??
+                        'No country found'),
                   )
                 else
-                  ..._filteredElements.map((code) => _Option(code, widget.flagWidth)),
+                  ..._filteredElements.map(
+                    (code) => _Option(
+                      code,
+                      widget.flagWidth,
+                      widget.countrySelectionMode,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -101,8 +119,11 @@ class _SelectionDialogState extends State<SelectionDialog> {
   void _onQueryChanged(String query) {
     final upper = query.toUpperCase();
     setState(() {
-      _filteredElements = widget.elements
-          .where((e) => e.code.contains(upper) || e.dialCode.contains(upper) || e.name.toUpperCase().contains(upper))
+      _filteredElements = _elements
+          .where((e) =>
+              e.code.contains(upper) ||
+              e.dialCode.contains(upper) ||
+              e.name.toUpperCase().contains(upper))
           .toList();
     });
   }
@@ -111,10 +132,12 @@ class _SelectionDialogState extends State<SelectionDialog> {
 class _Option extends StatelessWidget {
   final CountryCode _countryCode;
   final double _flagWidth;
+  final CountrySelectionMode _countrySelectionMode;
 
   const _Option(
     this._countryCode,
     this._flagWidth,
+    this._countrySelectionMode,
   );
 
   @override
@@ -133,7 +156,9 @@ class _Option extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                _countryCode.toLongString(),
+                _countrySelectionMode == CountrySelectionMode.country
+                    ? _countryCode.toCountryName()
+                    : _countryCode.toCountryNameWithCode(),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
               ),

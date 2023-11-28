@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:country_code_picker/src/country_selection_mode.dart';
 import 'package:flutter/material.dart';
 
 import 'package:country_code_picker/src/country_code.dart';
@@ -9,6 +10,7 @@ export 'src/country_code.dart';
 export 'src/country_codes.dart';
 export 'src/country_localizations.dart';
 export 'src/selection_dialog.dart';
+export 'src/country_selection_mode.dart';
 
 class CountryCodePicker extends StatefulWidget {
   final String initialSelection;
@@ -18,6 +20,7 @@ class CountryCodePicker extends StatefulWidget {
   final String searchHint;
   final Widget searchIcon;
   final ValueChanged<CountryCode> onInit;
+  final bool shouldShowArrow;
   final bool enabled;
 
   const CountryCodePicker({
@@ -29,6 +32,7 @@ class CountryCodePicker extends StatefulWidget {
     required this.searchIcon,
     required this.onInit,
     super.key,
+    this.shouldShowArrow = true,
     this.enabled = true,
   });
 
@@ -85,9 +89,11 @@ class CountryCodePickerState extends State<CountryCodePicker> {
     if (oldWidget.initialSelection != widget.initialSelection) {
       selectedItem = elements.firstWhere(
         (criteria) =>
-            (criteria.code.toUpperCase() == widget.initialSelection.toUpperCase()) ||
+            (criteria.code.toUpperCase() ==
+                widget.initialSelection.toUpperCase()) ||
             (criteria.dialCode == widget.initialSelection) ||
-            (criteria.name.toUpperCase() == widget.initialSelection.toUpperCase()),
+            (criteria.name.toUpperCase() ==
+                widget.initialSelection.toUpperCase()),
         orElse: () => elements[0],
       );
 
@@ -119,12 +125,17 @@ class CountryCodePickerState extends State<CountryCodePicker> {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            const Icon(
-              Icons.keyboard_arrow_down,
-              color: Color(0xFF090A0A),
-              size: 24,
-            ),
-            const SizedBox(width: 12),
+            if (widget.shouldShowArrow)
+              const Column(
+                children: [
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Color(0xFF090A0A),
+                    size: 24,
+                  ),
+                  SizedBox(width: 12),
+                ],
+              ),
           ],
         ),
       ),
@@ -136,11 +147,11 @@ class CountryCodePickerState extends State<CountryCodePicker> {
       context: context,
       builder: (context) => Dialog(
         child: SelectionDialog(
-          elements,
           favorites,
           widget.flagWidth,
           widget.searchIcon,
           widget.searchHint,
+          CountrySelectionMode.dialCode,
         ),
       ),
     );
